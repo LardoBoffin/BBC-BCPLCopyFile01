@@ -1,0 +1,68 @@
+//Copy file program
+//
+//Filename COPYFL
+//
+//Created 22/03/2016
+//
+//V1.00
+//
+//Copies a source file to a destination file one byte at a time using RDBIN
+//This is a very slow method!
+//Once copied call *INFO against both files to prove they are the same
+//Note that execution address etc. are not copied just the contents
+//
+
+GET "CPYHDR"
+
+LET START() BE
+   $(
+      outputFile()
+      findSourceFile()
+      getBytes()
+   $)
+
+AND getBytes() BE
+   $(
+      RCH() REPEATUNTIL CH=ENDSTREAMCH
+      ENDREAD()
+      ENDWRITE()
+      RUNPROG("**INFO EXMP1B")
+      RUNPROG("**INFO COPIED")
+      STOP(0)
+   $)
+
+AND RCH() BE
+   $(
+      CH:=RDBIN()
+      SWITCHON CH INTO
+         $(
+            CASE ENDSTREAMCH:
+               //end of stream so close output file
+
+            ENDCASE
+            DEFAULT:
+               WRBIN(CH) //needs to be save to file not print on screen
+            ENDCASE
+         $)
+   $)
+
+AND findSourceFile() BE
+   $(
+      SFILE:=FINDINPUT("EXMP1B")
+      SELECTINPUT(SFILE)
+   $)
+
+AND outputFile() BE
+   $(
+      TFILE:=FINDOUTPUT("/F.COPIED")
+      SELECTOUTPUT(TFILE)
+   $)
+
+
+
+
+
+
+
+
+
